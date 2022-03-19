@@ -12,8 +12,10 @@ public class RequestContextServletFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         if (HttpServletRequest.class.isAssignableFrom(servletRequest.getClass())) {
             HttpServletRequest request = (HttpServletRequest) servletRequest;
+            String clientId = request.getHeader(RequestContext.CLIENT_ID);
             String traceId = getTraceId(request);
             RequestContext requestContext = RequestContext.getInstance();
+            requestContext.setClientId(clientId);
             requestContext.setTraceId(traceId);
             requestContext.setTransactionId(UUID.randomUUID().toString());
         }
