@@ -43,6 +43,11 @@ public class LogConfiguration {
         return INSTANCE;
     }
 
+    public LogConfiguration pattern(LogPattern logPattern) {
+        patterns.add(logPattern);
+        return INSTANCE;
+    }
+
     public LogConfiguration toConsole() {
         outputs.add(System.out);
         return INSTANCE;
