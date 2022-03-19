@@ -1,8 +1,13 @@
 package se.coolcode.spicy.requestcontext;
 
-public class RequestContext {
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
+public class RequestContext {
+    public static final String TRACE_ID = "trace.id";
+    public static final String TRANSACTION_ID = "transaction.id";
     private static final RequestContextThreadLocal requestContextThreadLocal = new RequestContextThreadLocal();
+    private  final Map<String, String> values = new ConcurrentHashMap<>();
 
     private RequestContext() {}
 
@@ -12,6 +17,22 @@ public class RequestContext {
 
     public static void remove() {
         requestContextThreadLocal.remove();
+    }
+
+    public String getTraceId() {
+        return values.get(TRACE_ID);
+    }
+
+    public String getTransactionId() {
+        return values.get(TRANSACTION_ID);
+    }
+
+    public void setTraceId(String traceId) {
+        values.put(TRACE_ID, traceId);
+    }
+
+    public void setTransactionId(String transactionId) {
+        values.put(TRANSACTION_ID, transactionId);
     }
 
     private static class RequestContextThreadLocal extends ThreadLocal<RequestContext> {
