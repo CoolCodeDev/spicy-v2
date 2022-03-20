@@ -16,6 +16,10 @@ public class RequestContext {
         return RequestContext.requestContextThreadLocal.get();
     }
 
+    public static void set(RequestContext requestContext) {
+        RequestContext.requestContextThreadLocal.set(requestContext);
+    }
+
     public static void remove() {
         requestContextThreadLocal.remove();
     }
