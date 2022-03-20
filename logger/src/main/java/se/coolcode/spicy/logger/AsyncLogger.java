@@ -1,5 +1,7 @@
 package se.coolcode.spicy.logger;
 
+import se.coolcode.spicy.concurrency.NamedThreadFactory;
+
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ExecutorService;
@@ -13,7 +15,7 @@ public class AsyncLogger extends AbstractLogger {
 
     AsyncLogger(Class<?> type, LogConfiguration configuration) {
         super(type, configuration);
-        this.executor = Executors.newSingleThreadExecutor();
+        this.executor = Executors.newSingleThreadExecutor(new NamedThreadFactory("async-logger"));
         this.executor.submit(logTask());
     }
 
