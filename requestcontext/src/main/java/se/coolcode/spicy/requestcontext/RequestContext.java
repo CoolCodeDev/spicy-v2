@@ -44,7 +44,7 @@ public class RequestContext {
         values.put(TRANSACTION_ID, transactionId);
     }
 
-    private static class RequestContextThreadLocal extends ThreadLocal<RequestContext> {
+    private static class RequestContextThreadLocal extends InheritableThreadLocal<RequestContext> {
 
         @Override
         protected RequestContext initialValue() {
