@@ -1,6 +1,5 @@
 package se.coolcode.spicy.concurrency;
 
-import java.lang.management.MemoryMXBean;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
