@@ -10,16 +10,20 @@ public class RequestContextServletFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        if (HttpServletRequest.class.isAssignableFrom(servletRequest.getClass())) {
-            HttpServletRequest request = (HttpServletRequest) servletRequest;
-            String clientId = request.getHeader(RequestContext.CLIENT_ID);
-            String traceId = getTraceId(request);
-            RequestContext requestContext = RequestContext.getInstance();
-            requestContext.setClientId(clientId);
-            requestContext.setTraceId(traceId);
-            requestContext.setTransactionId(UUID.randomUUID().toString());
+        try {
+            if (HttpServletRequest.class.isAssignableFrom(servletRequest.getClass())) {
+                HttpServletRequest request = (HttpServletRequest) servletRequest;
+                String clientId = request.getHeader(RequestContext.CLIENT_ID);
+                String traceId = getTraceId(request);
+                RequestContext requestContext = RequestContext.getInstance();
+                requestContext.setClientId(clientId);
+                requestContext.setTraceId(traceId);
+                requestContext.setTransactionId(UUID.randomUUID().toString());
+            }
+            filterChain.doFilter(servletRequest, servletResponse);
+        } finally {
+            RequestContext.remove();
         }
-        filterChain.doFilter(servletRequest, servletResponse);
     }
 
     private String getTraceId(HttpServletRequest request) {
