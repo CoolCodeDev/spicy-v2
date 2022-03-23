@@ -39,7 +39,7 @@ public class URLConfigurationSource implements ConfigurationSource {
         String requestBody = createRequestBody(keys);
         HttpRequest request = createRequest(requestBody);
         HttpResponse<String> response = send(request);
-        return Json.toMap(response.body());
+        return response == null ? Map.of() : Json.toMap(response.body());
     }
 
     private HttpRequest createRequest(String requestBody) {
