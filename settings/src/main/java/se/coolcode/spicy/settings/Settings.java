@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Settings {
+public class Settings implements AutoCloseable {
 
     private final Set<Setting<?>> settings = new HashSet<>();
     private List<ConfigurationSource> configurationSources;
@@ -70,7 +70,8 @@ public class Settings {
                 .collect(Collectors.toList());
     }
 
-    public void destroy() {
+    @Override
+    public void close() {
         executorService.shutdown();
         int timeout = updatePeriod * 2;
         try {
