@@ -1,16 +1,52 @@
 package se.coolcode.spicy.settings;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public abstract class AbstractSetting<T> implements Setting<T> {
 
     private final String key;
-    private final T value;
+    private T value;
+    private final List<Consumer<Setting<T>>> listeners;
 
-    public AbstractSetting(String key, T value) {
+    public AbstractSetting(String key, String value) {
         this.key = key;
-        this.value = value;
+        this.value = parse(value, key);
+        listeners = new ArrayList<>();
     }
+
+    @Override
+    public String getKey() {
+        return key;
+    }
+
+    @Override
+    public T getValue() {
+        return value;
+    }
+
+    @Override
+    public boolean updateValue(String value) {
+        boolean updated = false;
+        if (Objects.nonNull(value) && !Objects.equals(this.value, value)) {
+            this.value = parse(value, key);
+            listeners.forEach(consumer -> consumer.accept(this));
+            updated = true;
+        }
+        return updated;
+    }
+
+    public void addListener(Consumer<Setting<T>> listener) {
+        this.listeners.add(listener);
+    }
+
+    public void removeListener(Consumer<Setting<T>> listener) {
+        this.listeners.remove(listener);
+    }
+
+    abstract T parse(String value, String key);
 
     @Override
     public boolean equals(Object o) {

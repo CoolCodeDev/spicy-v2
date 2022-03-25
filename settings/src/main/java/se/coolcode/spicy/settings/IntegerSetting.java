@@ -2,15 +2,15 @@ package se.coolcode.spicy.settings;
 
 public class IntegerSetting extends AbstractSetting<Integer> {
 
-    public IntegerSetting(String key, Integer value) {
+    public IntegerSetting(String key, String value) {
         super(key, value);
     }
 
-    public static Integer parse(String value, Property<Integer> property) {
+    public Integer parse(String value, String key) {
         try {
             return Integer.parseInt(value);
         } catch (NumberFormatException e) {
-            String message = String.format("Value '%s' could not be parsed as integer for property %s.", value, property);
+            String message = String.format("Value '%s' could not be parsed as integer for property %s.", value, key);
             throw new SettingsException(message, e);
         }
     }

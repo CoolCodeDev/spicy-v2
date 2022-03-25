@@ -1,35 +1,43 @@
 package se.coolcode.spicy.settings;
 
+import se.coolcode.spicy.concurrency.NamedThreadFactory;
+
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Settings {
 
-    private static Settings INSTANCE;
     private final Set<Setting<?>> settings = new HashSet<>();
     private List<ConfigurationSource> configurationSources;
+    private final int updatePeriod;
+    private final ScheduledExecutorService executorService;
 
-    private Settings(List<ConfigurationSource> configurationSources) {
+    public Settings(List<ConfigurationSource> configurationSources) {
+        this(configurationSources, 30);
+    }
+
+    public Settings(List<ConfigurationSource> configurationSources, int updatePeriod) {
         this.configurationSources = configurationSources;
+        this.updatePeriod = updatePeriod;
+        this.executorService = initExecutorService();
     }
 
-    public static Settings create(List<ConfigurationSource> configurationSources) {
-        if (INSTANCE == null) {
-            INSTANCE = new Settings(configurationSources);
-        } else {
-            INSTANCE.addConfigurationSources(configurationSources);
-        }
-        return INSTANCE;
-    }
-
-    public static Settings getInstance() {
-        return INSTANCE;
+    private ScheduledExecutorService initExecutorService() {
+        ThreadGroup parentThreadGroup = Thread.currentThread().getThreadGroup();
+        ThreadGroup threadGroup = new ThreadGroup(parentThreadGroup, "settings");
+        NamedThreadFactory threadFactory = new NamedThreadFactory("settings-updater", threadGroup);
+        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor(threadFactory);
+        executor.scheduleAtFixedRate(new SettingsUpdater(this.settings, this.configurationSources), 0, updatePeriod, TimeUnit.SECONDS);
+        return executor;
     }
 
     public BooleanSetting createBooleanSetting(Property<Boolean> property) {
         String value = getValue(property);
-        BooleanSetting setting = new BooleanSetting(property.key(), BooleanSetting.parse(value, property));
+        BooleanSetting setting = new BooleanSetting(property.key(), value);
         settings.add(setting);
         return setting;
     }
@@ -42,7 +50,7 @@ public class Settings {
 
     public IntegerSetting createIntegerSetting(Property<Integer> property) {
         String value = getValue(property);
-        IntegerSetting setting = new IntegerSetting(property.key(), IntegerSetting.parse(value, property));
+        IntegerSetting setting = new IntegerSetting(property.key(), value);
         settings.add(setting);
         return setting;
     }
@@ -60,6 +68,21 @@ public class Settings {
                 .flatMap(Collection::stream)
                 .distinct()
                 .collect(Collectors.toList());
+    }
+
+    public void destroy() {
+        executorService.shutdown();
+        int timeout = updatePeriod * 2;
+        try {
+            if (!executorService.awaitTermination(timeout, TimeUnit.SECONDS)) {
+                executorService.shutdownNow();
+                if (!executorService.awaitTermination(timeout, TimeUnit.SECONDS))
+                    System.err.println("ScheduledExecutorService settings-updater did not terminate.");
+            }
+        } catch (InterruptedException ie) {
+            executorService.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
     }
 
 }
