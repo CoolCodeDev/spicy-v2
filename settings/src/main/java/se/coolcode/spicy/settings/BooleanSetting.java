@@ -6,7 +6,7 @@ public class BooleanSetting extends AbstractSetting<Boolean> {
         super(key, value);
     }
 
-    public Boolean parse(String value, String key) {
+    public Boolean parse(String value) {
         Boolean parsedValue = Boolean.parseBoolean(value);
         if (parsedValue.toString().equals(value)) {
             return parsedValue;

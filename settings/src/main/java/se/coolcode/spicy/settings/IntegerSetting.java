@@ -6,7 +6,7 @@ public class IntegerSetting extends AbstractSetting<Integer> {
         super(key, value);
     }
 
-    public Integer parse(String value, String key) {
+    public Integer parse(String value) {
         try {
             return Integer.parseInt(value);
         } catch (NumberFormatException e) {

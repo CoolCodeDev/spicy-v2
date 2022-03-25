@@ -7,13 +7,13 @@ import java.util.function.Consumer;
 
 public abstract class AbstractSetting<T> implements Setting<T> {
 
-    private final String key;
+    protected final String key;
     private T value;
     private final List<Consumer<Setting<T>>> listeners;
 
     public AbstractSetting(String key, String value) {
         this.key = key;
-        this.value = parse(value, key);
+        this.value = parse(value);
         listeners = new ArrayList<>();
     }
 
@@ -31,7 +31,7 @@ public abstract class AbstractSetting<T> implements Setting<T> {
     public boolean updateValue(String value) {
         boolean updated = false;
         if (Objects.nonNull(value) && !Objects.equals(this.value, value)) {
-            this.value = parse(value, key);
+            this.value = parse(value);
             listeners.forEach(consumer -> consumer.accept(this));
             updated = true;
         }
@@ -46,7 +46,7 @@ public abstract class AbstractSetting<T> implements Setting<T> {
         this.listeners.remove(listener);
     }
 
-    abstract T parse(String value, String key);
+    abstract T parse(String value);
 
     @Override
     public boolean equals(Object o) {

@@ -7,7 +7,7 @@ public class StringSetting extends AbstractSetting<String> {
     }
 
     @Override
-    String parse(String value, String key) {
+    String parse(String value) {
         return value;
     }
 
