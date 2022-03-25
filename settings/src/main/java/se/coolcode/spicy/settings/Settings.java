@@ -55,6 +55,10 @@ public class Settings implements AutoCloseable {
         return setting;
     }
 
+    public void addSetting(Setting<?> setting) {
+        settings.add(setting);
+    }
+
     private String getValue(Property<?> property) {
         return this.configurationSources.stream()
                 .map(source -> source.getValue(property.key()))
