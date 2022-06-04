@@ -5,9 +5,9 @@ import java.util.Map;
 
 public class Json
 {
-    public static JsonObject fromJson(String json) {
-        JsonReader jsonReader = new JsonReader(new StringReader(json));
-        Map<String, JsonValue> values = jsonReader.getKeyValues();
-        return new JsonObject(values);
+    public static JsonElement fromJson(String json) {
+        json = json.trim();
+        JsonType type = JsonType.getType(json.charAt(0));
+        return new JsonValue(type, json).toJsonElement();
     }
 }

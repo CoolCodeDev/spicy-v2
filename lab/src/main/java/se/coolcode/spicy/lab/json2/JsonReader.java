@@ -65,16 +65,6 @@ public class JsonReader {
         }
     }
 
-    private void printStringReader() {
-        try {
-            OutputStreamWriter out = new OutputStreamWriter(System.out);
-            stringReader.transferTo(out);
-            out.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     private JsonValue getValue(int data) {
         try {
             StringBuilder value = new StringBuilder();

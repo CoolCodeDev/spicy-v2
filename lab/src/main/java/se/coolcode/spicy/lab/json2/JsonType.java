@@ -2,7 +2,9 @@ package se.coolcode.spicy.lab.json2;
 
 public enum JsonType {
     STRING('"', '"'),
-    ARRAY('[', ']');
+    ARRAY('[', ']'),
+    OBJECT('{', '}'),
+    NULL((char) -1, (char) -1);
 
     private final char begin;
     private final char end;
@@ -17,6 +19,8 @@ public enum JsonType {
             return STRING;
         } else if (ARRAY.isBegin(c)) {
             return ARRAY;
+        } else if (OBJECT.isBegin(c)) {
+            return OBJECT;
         }
         return null;
     }
