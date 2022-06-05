@@ -1,7 +1,25 @@
 package se.coolcode.spicy.json;
 
 public class JsonNull implements JsonElement {
-    public static final JsonElement NULL = new JsonNull();
+    public static TypeBuilder builder() {
+        return null;
+    }
 
-    private JsonNull() {}
+    private static class JsonNullTypeBuilder implements TypeBuilder {
+
+        @Override
+        public boolean isAppendable() {
+            return false;
+        }
+
+        @Override
+        public void append(char c) {
+
+        }
+
+        @Override
+        public JsonElement build() {
+            return null;
+        }
+    }
 }

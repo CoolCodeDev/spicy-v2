@@ -1,12 +1,12 @@
 package se.coolcode.spicy.json;
 
-public class JsonObject implements JsonElement {
+public class JsonBoolean implements JsonElement {
 
     public static TypeBuilder builder() {
         return null;
     }
 
-    private static class JsonObjectTypeBuilder implements TypeBuilder {
+    private static class JsonBooleanTypeBuilder implements TypeBuilder {
 
         @Override
         public boolean isAppendable() {
