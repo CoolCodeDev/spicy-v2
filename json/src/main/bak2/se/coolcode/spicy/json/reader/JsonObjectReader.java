@@ -1,22 +1,21 @@
 package se.coolcode.spicy.json.reader;
 
+import se.coolcode.spicy.json.JsonType;
+
 import java.util.regex.Pattern;
 
 public class JsonObjectReader {
-    private final String data;
-    private int currentPosition;
+    private String data;
     private boolean valueIsExtracted;
     private boolean keyIsExtracted;
 
     public JsonObjectReader(String data) {
         this.data = data;
-        this.currentPosition = 0;
     }
 
     public boolean hasNextKey() {
-        String currentData = getCurrentData();
         return Pattern.compile("(\".*?\":)", Pattern.MULTILINE)
-                .matcher(currentData).results().findAny().isPresent();
+                .matcher(data).results().findAny().isPresent();
     }
 
     public String getNextKey() {
@@ -25,7 +24,7 @@ public class JsonObjectReader {
             getNextValue();
         }
         String key = extractKey();
-        setCurrentPosition(key);
+        updateData(key);
         valueIsExtracted = false;
         return key;
         //register current position
@@ -40,7 +39,7 @@ public class JsonObjectReader {
             getNextKey();
         }
         String value = extractValue();
-        setCurrentPosition(value);
+        updateData(value);
         keyIsExtracted = false;
         return value;
         //extract next value starting on current position
@@ -49,24 +48,21 @@ public class JsonObjectReader {
     }
 
     private String extractKey() {
-        String currentData = getCurrentData();
         return Pattern.compile("(\".*?\")", Pattern.MULTILINE)
-                .matcher(currentData).results().findFirst()
+                .matcher(data).results().findFirst()
                 .orElse(NoMatchResult.NO_MATCH_RESULT).group();
     }
 
     private String extractValue() {
-        String currentData = getCurrentData();
-        return
+
+        return null;
     }
 
-    private String getCurrentData() {
-        return data.substring(currentPosition, data.length());
-    }
-
-    private void setCurrentPosition(String data) {
-        if (data != null) {
-           currentPosition = data.indexOf(data) + data.length() +1;
+    private void updateData(String extracted) {
+        if (extracted != null) {
+            this.data = this.data != null
+                    ? this.data.replaceFirst(extracted, "")
+                    : null;
         }
     }
 }
