@@ -33,7 +33,16 @@ public class JsonObjectReaderTest {
 
     @Test
     void getNextKeyReturnsNewKeyOnEachCall() {
-        fail();
+        String json = "{\"one\": \"value-1\", \"two\": \"value-2\"}";
+        JsonObjectReader reader = new JsonObjectReader(json);
+
+        String first = reader.getNextKey();
+        String second = reader.getNextKey();
+
+        assertNotNull(first, "First key is null.");
+        assertNotNull(second, "Second key is null.");
+        assertEquals("\"one\"", first);
+        assertEquals("\"two\"", second);
     }
 
     @Test
