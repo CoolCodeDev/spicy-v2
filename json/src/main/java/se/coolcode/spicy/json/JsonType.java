@@ -4,17 +4,19 @@ import java.util.Arrays;
 import java.util.function.Function;
 
 enum JsonType {
-    OBJECT(JsonType::isBeginningObject),
-    ARRAY(JsonType::isBeginningArray),
-    BOOLEAN(JsonType::isBeginningBoolean),
-    NUMBER(Character::isDigit),
-    STRING(JsonType::isBeginningString),
-    NULL(JsonType::isBeginningNull);
+    OBJECT(JsonType::isBeginningObject, JsonType::isEndingObject),
+    ARRAY(JsonType::isBeginningArray, JsonType::isEndingArray),
+    BOOLEAN(JsonType::isBeginningBoolean, JsonType::endingIsNotApplicable),
+    NUMBER(Character::isDigit, JsonType::endingIsNotApplicable),
+    STRING(JsonType::isBeginningString, JsonType::isEndingString),
+    NULL(JsonType::isBeginningNull, JsonType::endingIsNotApplicable);
 
     private final Function<Character, Boolean> isBeginning;
+    private final Function<Character, Boolean> isEnding;
 
-    JsonType(Function<Character, Boolean> isBeginning) {
+    JsonType(Function<Character, Boolean> isBeginning, Function<Character, Boolean> isEnding) {
         this.isBeginning = isBeginning;
+        this.isEnding = isEnding;
     }
 
     public static JsonType getFrom(String data) {
@@ -42,8 +44,16 @@ enum JsonType {
         return '{' == c;
     }
 
+    private static boolean isEndingObject(char c) {
+        return '}' == c;
+    }
+
     private static boolean isBeginningArray(char c) {
         return '[' == c;
+    }
+
+    private static boolean isEndingArray(char c) {
+        return ']' == c;
     }
 
     private static boolean isBeginningBoolean(char c) {
@@ -54,7 +64,23 @@ enum JsonType {
         return '"' == c;
     }
 
+    private static boolean isEndingString(char c) {
+        return isBeginningString(c);
+    }
+
     private static boolean isBeginningNull(char c) {
         return 'n' == c || 'N' == c || 'u' == c || 'U' == c;
+    }
+
+    private static boolean endingIsNotApplicable(char c) {
+        throw new JsonException("Evaluating if character %s is end of json type is not applicable.");
+    }
+
+    public boolean isBeginning(char c) {
+        return this.isBeginning.apply(c);
+    }
+
+    public boolean isEnding(char c) {
+        return false;
     }
 }
